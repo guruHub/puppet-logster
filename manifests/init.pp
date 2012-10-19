@@ -15,9 +15,12 @@ class logster(
   $build_dir='/usr/local/src'
 ) {
 
+  Exec {
+    path => '/bin:/usr/bin:/usr/sbin',
+  }
   case $::operatingsystem {
     'Debian' : {
-      package { 'build-essential' :
+      package { ['build-essential','wget','tar'] :
         ensure => present
       }
       exec { "Download and uncompress logster" :
@@ -27,7 +30,6 @@ class logster(
       }
       exec { "Install logster":
         command     => "make install",
-        path        => '/usr/bin',
         cwd         => "${build_dir}/etsy-logster-4f13412",
         subscribe   => Exec['Download and uncompress logster'],
         logoutput   => on_failure,
