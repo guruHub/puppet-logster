@@ -28,6 +28,7 @@ define logster::graphite (
   $hour = '*',
   $minute = '*',
   $debug = undef,
+  $parseroptions = undef,
   $type ='SampleLogster') {
 
   if $prefix {
@@ -41,9 +42,15 @@ define logster::graphite (
   } else {
     $debugcmd = ''
   }
+
+  if $parseroptions {
+    $parseroptionscmd = " --parser-options '$parseroptions' "
+  } else {
+    $parseroptionscmd = ''
+  }
   cron { "cron-${name}":
     ensure  => present,
-    command => "/usr/sbin/logster ${debugcmd}--output=graphite --graphite-host=${host}:${port} ${type} ${file} ${prefixcmd}  > /dev/null 2>&1",
+    command => "/usr/sbin/logster ${debugcmd}${parseroptions}--output=graphite --graphite-host=${host}:${port} ${type} ${file} ${prefixcmd}  > /dev/null 2>&1",
     user    => 'root',
     hour    => $hour,
     minute  => $minute
