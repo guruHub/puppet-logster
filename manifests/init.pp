@@ -34,7 +34,7 @@ class logster(
         subscribe   => Exec['Download and uncompress logster'],
         logoutput   => on_failure,
         refreshonly => true,
-        require     => [ Exec['Download and uncompress logster'], Package['build-essential'] ]
+        require     => [ Exec['Download and uncompress logster'], Package['build-essential'], Package['logcheck'] ]
       }
     }
     default : {
