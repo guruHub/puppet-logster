@@ -17,6 +17,9 @@ class logster(
 
   case $::operatingsystem {
     'Debian' : {
+      Package { 'build-essential' :
+        ensure => present
+      }
       exec { "Download and uncompress logster" :
         command => "wget -O - https://github.com/etsy/logster/tarball/4f134128cdc410322b30e759bb0a74e66898cfb5 | tar xz ",
         creates => "${build_dir}/etsy-logster-4f13412",
@@ -24,11 +27,12 @@ class logster(
       }
       exec { "Install logster":
         command     => "make install",
+        path        => '/usr/bin',
         cwd         => "${build_dir}/etsy-logster-4f13412",
-        subscribe   => Exec["Download and uncompress logster"],
+        subscribe   => Exec['Download and uncompress logster'],
         logoutput   => on_failure,
         refreshonly => true,
-        require     => Exec["Download and uncompress logster"]
+        require     => [ Exec['Download and uncompress logster'], Package['build-essential'] ]
       }
     }
     default : {
