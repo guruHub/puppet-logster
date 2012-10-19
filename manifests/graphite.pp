@@ -22,16 +22,25 @@
 #
 define logster::graphite (
   $file,
-  $prefix,
+  $prefix = undef,
   $host = '',
   $port = '2003',
+  $hour = '*',
+  $minute = '*',
   $type ='SampleLogster') {
+
+  if $prefix {
+    $prefixcmd = "-p $prefix"
+  } else {
+    $prefixcmd = ''
+  }
 
   cron { "cron-${name}":
     ensure  => present,
-    command => "/usr/sbin/logster --output=graphite --graphite-host=${host}:${port} ${type} ${file} -p ${prefix}  > /dev/null 2>&1",
+    command => "/usr/sbin/logster --output=graphite --graphite-host=${host}:${port} ${type} ${file} ${prefixcmd}  > /dev/null 2>&1",
     user    => 'root',
-    minute  => '*',
+    hour    => $hour,
+    minute  => $minute
   }
 
 }
