@@ -17,7 +17,7 @@ class logster(
 
   case $::operatingsystem {
     'Debian' : {
-      Package { 'build-essential' :
+      package { 'build-essential' :
         ensure => present
       }
       exec { "Download and uncompress logster" :
