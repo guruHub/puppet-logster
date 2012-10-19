@@ -11,11 +11,32 @@
 # Sample Usage:
 #
 # [Remember: No empty lines between comments and class definition]
-class logster {
+class logster(
+  $build_dir='/usr/local/src'
+) {
 
-  package {
-    'logster':
-      ensure => present,
+  case $::operatingsystem {
+    'Debian' : {
+      exec { "Download and uncompress logster" :
+        command => "wget -O - https://github.com/etsy/logster/tarball/4f134128cdc410322b30e759bb0a74e66898cfb5 | tar xz ",
+        creates => "${build_dir}/etsy-logster-4f13412",
+        cwd     => "$build_dir"
+      }
+      exec { "Install logster":
+        command     => "make install",
+        cwd         => "${build_dir}/etsy-logster-4f13412",
+        subscribe   => Exec["Download and uncompress logster"],
+        logoutput   => on_failure,
+        refreshonly => true,
+        require     => Exec["Download and uncompress logster"]
+      }
+    }
+    default : {
+      package {
+        'logster':
+         ensure => present,
+      }
+    }
   }
 
   package {
